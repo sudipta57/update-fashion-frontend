@@ -17,13 +17,30 @@ interface BannerCarouselProps {
 const BannerCarousel: React.FC<BannerCarouselProps> = ({ banners }) => {
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: banners.length > 1, // Only enable infinite if more than 1 banner
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
+    autoplay: banners.length > 1, // Only autoplay if more than 1 banner
+    autoplaySpeed: 3000,
     nextArrow: <></>,
-    prevArrow:<></>,
+    prevArrow: <></>,
   };
+
+  // If only one banner, show it without carousel
+  if (banners.length === 1) {
+    return (
+      <div className="relative min-h-[40rem]">
+        <Link to={banners[0].link}>
+          <img
+            src={banners[0].imageUrl}
+            alt="Banner"
+            className="w-full h-[40rem] object-cover"
+          />
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-[40rem]">
