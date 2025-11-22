@@ -129,32 +129,33 @@ const ProductDetails: React.FC = () => {
   };
 
   const handlePlaceOrder = async () => {
-    if (!product) {
-      return;
-    }
-    const orderDetails = {
-      productId: product._id,
-      address,
-      email,
-      phone,
-      orderStatus: "ORDER PLACED",
-      amountToBePaid: product.price,
-      alreadyPaid: false,
-      size: selectedSize,
-      userId,
-    };
-
-    console.log(orderDetails);
-    try {
-      await createOrder(orderDetails);
-
-      alert("Order placed successfully!");
-      setShowAddressModal(false);
-    } catch (error) {
-      console.error("Error placing order:", error);
-      alert("Failed to place the order.");
-    }
+  if (!product) {
+    return;
+  }
+  const orderDetails = {
+    productId: product._id,
+    address,
+    email,
+    phone,
+    orderStatus: "ORDER PLACED",
+    amountToBePaid: product.price,
+    alreadyPaid: false,
+    size: selectedSize,
+    userId,
+    quantity: 1, // Add this line - default quantity is 1
   };
+
+  console.log(orderDetails);
+  try {
+    await createOrder(orderDetails);
+
+    alert("Order placed successfully!");
+    setShowAddressModal(false);
+  } catch (error) {
+    console.error("Error placing order:", error);
+    alert("Failed to place the order.");
+  }
+};
 
   const handleToggleFavorite = async () => {
     if (isFavorite) {
