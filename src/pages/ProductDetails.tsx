@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useRazorpay } from "../hooks/useRazorpay";
+import { useNavigate } from "react-router-dom";
 import {
   getProductById,
   getReviewsByProductId,
@@ -83,6 +85,11 @@ const ProductDetails: React.FC = () => {
 
   const [hoverStates, setHoverStates] = useState<boolean[]>([]);
 
+  const { initiatePayment } = useRazorpay();
+  const navigate = useNavigate();
+  const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -129,33 +136,36 @@ const ProductDetails: React.FC = () => {
   };
 
   const handlePlaceOrder = async () => {
-  if (!product) {
+    if (!product || !selectedSize) {
+    alert("Please select a size");
     return;
   }
-  const orderDetails = {
-    productId: product._id,
-    address,
-    email,
-    phone,
-    orderStatus: "ORDER PLACED",
-    amountToBePaid: product.price,
-    alreadyPaid: false,
-    size: selectedSize,
-    userId,
-    quantity: 1, // Add this line - default quantity is 1
+    const orderDetails = {
+      productId: product._id,
+      address,
+      email,
+      phone,
+      orderStatus: "ORDER PLACED",
+      amountToBePaid: product.price,
+      alreadyPaid: false,
+      size: selectedSize,
+      userId,
+      quantity: 1, // Add this line - default quantity is 1
+    };
+
+    console.log(orderDetails);
+    try {
+      const createdOrder = await createOrder(orderDetails);
+      setCurrentOrderId(createdOrder._id);
+
+      alert("Order placed successfully!");
+      setShowAddressModal(false);
+      setShowPaymentModal(true);
+    } catch (error) {
+      console.error("Error placing order:", error);
+      alert("Failed to place the order.");
+    }
   };
-
-  console.log(orderDetails);
-  try {
-    await createOrder(orderDetails);
-
-    alert("Order placed successfully!");
-    setShowAddressModal(false);
-  } catch (error) {
-    console.error("Error placing order:", error);
-    alert("Failed to place the order.");
-  }
-};
 
   const handleToggleFavorite = async () => {
     if (isFavorite) {
@@ -211,6 +221,30 @@ const ProductDetails: React.FC = () => {
     newHoverStates[index] = isHovering;
     setHoverStates(newHoverStates);
   };
+
+  const handlePayNow = () => {
+    if (!currentOrderId || !product) return;
+
+    initiatePayment({
+      amount: product.price,
+      orderId: currentOrderId,
+      onSuccess: () => {
+        alert("Payment successful! Order confirmed.");
+        setShowPaymentModal(false);
+        navigate("/my-orders");
+      },
+      onFailure: (error) => {
+        alert(`Payment failed: ${error}`);
+      },
+    });
+  };
+
+  const handlePayLater = async () => {
+    alert("Order placed! You can pay later.");
+    setShowPaymentModal(false);
+    navigate("/my-orders");
+  };
+
   return (
     <div className="p-6 bg-white rounded-md shadow-md">
       <div className="flex flex-col lg:flex-row">
@@ -622,6 +656,40 @@ const ProductDetails: React.FC = () => {
                       Place Order
                     </button>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Payment Modal */}
+            {showPaymentModal && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[999999]">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-md w-96">
+                  <h2 className="text-lg font-semibold mb-4 dark:text-white">
+                    Choose Payment Option
+                  </h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+                    Total Amount: ₹{product?.price}
+                  </p>
+                  <div className="flex gap-4">
+                    <button
+                      onClick={handlePayNow}
+                      className="flex-1 bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700"
+                    >
+                      Pay Now
+                    </button>
+                    <button
+                      onClick={handlePayLater}
+                      className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
+                    >
+                      Pay Later
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => setShowPaymentModal(false)}
+                    className="w-full mt-4 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             )}

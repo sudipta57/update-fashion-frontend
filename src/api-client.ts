@@ -627,3 +627,38 @@ export const deleteHomePhoto = async (id: string) => {
 
   return response.json();
 };
+
+// Payment APIs
+export const createRazorpayOrder = async (amount: number) => {
+  const response = await fetch(`${API_BASE_URL}/api/payment/create-order`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ amount, currency: "INR" }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create payment order");
+  }
+
+  return response.json();
+};
+
+export const verifyRazorpayPayment = async (paymentData: any) => {
+  const response = await fetch(`${API_BASE_URL}/api/payment/verify-payment`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(paymentData),
+  });
+
+  if (!response.ok) {
+    throw new Error("Payment verification failed");
+  }
+
+  return response.json();
+};
