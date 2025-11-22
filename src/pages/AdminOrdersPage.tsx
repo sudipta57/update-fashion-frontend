@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useEffect, useState } from "react";
 import { getAllOrders, updateOrderStatus } from "../api-client";
-import {  FaCalendarDay } from "react-icons/fa";
+import { FaCalendarDay } from "react-icons/fa";
 import { CgBox, CgPhone, CgProfile, CgSize } from "react-icons/cg";
 import { AiOutlineEdit } from "react-icons/ai";
 
@@ -103,6 +104,28 @@ const AdminOrdersPage = () => {
                   alt=""
                 />
               </div>
+
+              {order.paymentDetails && (
+                <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded">
+                  <h4 className="font-semibold mb-2">Payment Details:</h4>
+                  <p className="text-sm">
+                    Payment ID: {order.paymentDetails.razorpayPaymentId}
+                  </p>
+                  <p className="text-sm">
+                    Order ID: {order.paymentDetails.razorpayOrderId}
+                  </p>
+                  <p className="text-sm">
+                    Method: {order.paymentDetails.paymentMethod}
+                  </p>
+                  <p className="text-sm">
+                    Status: {order.paymentDetails.paymentStatus}
+                  </p>
+                  <p className="text-sm">
+                    Paid At:{" "}
+                    {new Date(order.paymentDetails.paidAt).toLocaleString()}
+                  </p>
+                </div>
+              )}
             </div>
             <div className="flex flex-col justify-start gap-3 items-end">
               <p
