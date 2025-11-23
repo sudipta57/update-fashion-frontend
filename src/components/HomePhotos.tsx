@@ -6,31 +6,33 @@ import { BackgroundBeamsWithCollision } from "./ui/background-beams-with-collisi
 import HyperText from "./magicui/hyper-text";
 
 function HomePhotos() {
-    const [homePhotos, setHomePhotos] = useState<any[]>([]);
+  const [homePhotos, setHomePhotos] = useState<any[]>([]);
 
-    useEffect(() => {
-        const fetchHomePhotos = async () => {
-            try {
-                const data = await getHomePhotos();
-                setHomePhotos(data);
-            } catch (error) {
-                console.error("Error fetching home photos:", error);
-            }
-        };
+  useEffect(() => {
+    const fetchHomePhotos = async () => {
+      try {
+        const data = await getHomePhotos();
+        setHomePhotos(data);
+      } catch (error) {
+        console.error("Error fetching home photos:", error);
+      }
+    };
 
-        fetchHomePhotos();
-    }, []);
-    return (
-        <div className="pt-10 px-3">
-            <div className="flex justify-center">
-
-                <HyperText className="text-center poppins-bold  text-4xl mb-3 " text={"Gallery"} />
-            </div>
-            <BackgroundBeamsWithCollision>
-                <FocusCards cards={homePhotos} />
-            </BackgroundBeamsWithCollision>
-        </div>
-    )
+    fetchHomePhotos();
+  }, []);
+  return (
+    <div className="px-3">
+      <div className="flex justify-center">
+        <HyperText
+          className="text-center poppins-bold  text-4xl mb-3 "
+          text={"Gallery"}
+        />
+      </div>
+      <BackgroundBeamsWithCollision>
+        <FocusCards cards={homePhotos} />
+      </BackgroundBeamsWithCollision>
+    </div>
+  );
 }
 
-export default HomePhotos
+export default HomePhotos;

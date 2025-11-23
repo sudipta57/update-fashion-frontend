@@ -39,25 +39,22 @@ const HomePage: React.FC = () => {
       </div>
       <ProductCarousel />
 
-
-
       <div className="max-w-6xl mx-auto px-2 gap-3 grid grid-cols-1 md:grid-cols-3 justify-center items-center text-center  poppins mt-10">
         <div className="text-5xl font-semibold">
-        <NumberTicker value={noOfOrders}/>+
+          <NumberTicker value={noOfOrders} />+
           <p className="text-xl">Happy Customers</p>
         </div>
         <div className="text-5xl font-semibold">
-        <NumberTicker value={noOfProducts}/>+
+          <NumberTicker value={noOfProducts} />+
           <p className="text-xl">High-Quality Products</p>
         </div>
         <div className="text-5xl font-semibold">
-        <NumberTicker value={noOfRating}/>.<NumberTicker value={noOfRatingAD}/>/5
+          <NumberTicker value={noOfRating} />.
+          <NumberTicker value={noOfRatingAD} />
+          /5
           <p className="text-xl">Positive Rating</p>
         </div>
       </div>
-
-
-
 
       <CategorySection />
       <div className="-my-20 portrait:hidden flex items-center justify-center">
