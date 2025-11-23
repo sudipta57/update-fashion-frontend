@@ -2,7 +2,7 @@
 import { RegisterFormData } from "./pages/Register";
 import { SignInFormData } from "./pages/SignIn";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 // ------------------------------------user
 
@@ -448,7 +448,7 @@ export const createOrder = async (orderData: any) => {
   });
 
   const responseBody = await response.json();
-
+  console.log(responseBody);
   if (!response.ok) {
     throw new Error(responseBody.message || "Failed to create order");
   }
@@ -523,13 +523,16 @@ export const getOrderById = async (orderId: string) => {
 // ---------------------------------favourites
 
 export const addToFavorites = async (productId: string) => {
-  const response = await fetch(`${API_BASE_URL}/api/users/add-to-favorites/${productId}`, {
-    method: "POST",
-    credentials: "include", // Include cookies with the request
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const response = await fetch(
+    `${API_BASE_URL}/api/users/add-to-favorites/${productId}`,
+    {
+      method: "POST",
+      credentials: "include", // Include cookies with the request
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
   if (!response.ok) {
     const errorData = await response.json();
@@ -559,27 +562,22 @@ export const removeFromFavorites = async (productId: string) => {
   return await response.json();
 };
 
-
-
 export const getFavorites = async () => {
-      const response = await fetch(`${API_BASE_URL}/api/users/get-favorites`, {
-          method: 'GET',
-          credentials: 'include', // Include cookies with the request
-          headers: {
-              'Content-Type': 'application/json',
-          },
-      });
+  const response = await fetch(`${API_BASE_URL}/api/users/get-favorites`, {
+    method: "GET",
+    credentials: "include", // Include cookies with the request
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-      if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message);
-      }
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message);
+  }
 
-      return await response.json();
+  return await response.json();
 };
-
-
-
 
 // ---------------------------------homephoto
 

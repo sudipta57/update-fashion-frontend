@@ -6,7 +6,6 @@ import {
   getProductById,
   getReviewsByProductId,
   addReview,
-  createOrder,
   addToFavorites,
   getFavorites,
   removeFromFavorites,
@@ -87,7 +86,25 @@ const ProductDetails: React.FC = () => {
 
   const { initiatePayment } = useRazorpay();
   const navigate = useNavigate();
-  const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
+  // const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
+  const [pendingOrderDetails, setPendingOrderDetails] = useState<{
+    productId: string;
+    address: {
+      addressLine1: string;
+      addressLine2: string;
+      city: string;
+      state: string;
+      pinCode: string;
+    };
+    email: string;
+    phone: string;
+    orderStatus: string;
+    amountToBePaid: number;
+    alreadyPaid: boolean;
+    size: string;
+    userId: string | undefined;
+    quantity: number;
+  } | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
@@ -137,34 +154,65 @@ const ProductDetails: React.FC = () => {
 
   const handlePlaceOrder = async () => {
     if (!product || !selectedSize) {
-    alert("Please select a size");
-    return;
-  }
+      alert("Please select a size");
+      return;
+    }
+    // Validate address fields
+    if (!email || !phone) {
+      alert("Please enter email and phone number");
+      return;
+    }
+
+    if (
+      !address.addressLine1 ||
+      !address.city ||
+      !address.state ||
+      !address.pinCode
+    ) {
+      alert("Please fill in all required address fields");
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address");
+      return;
+    }
+
+    // Validate phone number (10 digits)
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(phone)) {
+      alert("Please enter a valid 10-digit phone number");
+      return;
+    }
+
+    // Validate pin code (6 digits)
+    const pinCodeRegex = /^[0-9]{6}$/;
+    if (!pinCodeRegex.test(address.pinCode)) {
+      alert("Please enter a valid 6-digit pin code");
+      return;
+    }
+    // Prepare order details but DON'T create order yet
     const orderDetails = {
       productId: product._id,
       address,
       email,
       phone,
-      orderStatus: "ORDER PLACED",
+      orderStatus: "ORDER CONFIRMED", // Will be confirmed after payment
       amountToBePaid: product.price,
-      alreadyPaid: false,
+      alreadyPaid: false, // Will be updated after payment
       size: selectedSize,
       userId,
-      quantity: 1, // Add this line - default quantity is 1
+      quantity: 1,
     };
 
-    console.log(orderDetails);
-    try {
-      const createdOrder = await createOrder(orderDetails);
-      setCurrentOrderId(createdOrder._id);
+    // Store order details temporarily
+    setPendingOrderDetails(orderDetails);
 
-      alert("Order placed successfully!");
-      setShowAddressModal(false);
-      setShowPaymentModal(true);
-    } catch (error) {
-      console.error("Error placing order:", error);
-      alert("Failed to place the order.");
-    }
+    // Show payment modal directly
+    setShowAddressModal(false);
+    setShowPaymentModal(true);
   };
 
   const handleToggleFavorite = async () => {
@@ -196,6 +244,11 @@ const ProductDetails: React.FC = () => {
         const reviewsData = await getReviewsByProductId(product._id);
         setReviews(reviewsData);
         setShowModal(false);
+        setNewReview({
+          description: "",
+          rating: 0,
+          title: "",
+        });
       } catch (error) {
         console.error("Error adding review:", error);
       }
@@ -223,26 +276,21 @@ const ProductDetails: React.FC = () => {
   };
 
   const handlePayNow = () => {
-    if (!currentOrderId || !product) return;
+    if (!pendingOrderDetails || !product) return;
 
     initiatePayment({
       amount: product.price,
-      orderId: currentOrderId,
+      orderDetails: pendingOrderDetails,
       onSuccess: () => {
-        alert("Payment successful! Order confirmed.");
         setShowPaymentModal(false);
+        setPendingOrderDetails(null);
         navigate("/my-orders");
       },
       onFailure: (error) => {
         alert(`Payment failed: ${error}`);
+        setPendingOrderDetails(null);
       },
     });
-  };
-
-  const handlePayLater = async () => {
-    alert("Order placed! You can pay later.");
-    setShowPaymentModal(false);
-    navigate("/my-orders");
   };
 
   return (
@@ -665,7 +713,7 @@ const ProductDetails: React.FC = () => {
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[999999]">
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-md w-96">
                   <h2 className="text-lg font-semibold mb-4 dark:text-white">
-                    Choose Payment Option
+                    Proceed to Payment
                   </h2>
                   <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
                     Total Amount: ₹{product?.price}
@@ -678,18 +726,15 @@ const ProductDetails: React.FC = () => {
                       Pay Now
                     </button>
                     <button
-                      onClick={handlePayLater}
+                      onClick={() => {
+                        setShowPaymentModal(false);
+                        setPendingOrderDetails(null);
+                      }}
                       className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
                     >
-                      Pay Later
+                      Cancel
                     </button>
                   </div>
-                  <button
-                    onClick={() => setShowPaymentModal(false)}
-                    className="w-full mt-4 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
-                  >
-                    Cancel
-                  </button>
                 </div>
               </div>
             )}

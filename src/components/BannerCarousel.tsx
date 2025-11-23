@@ -46,13 +46,15 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ banners }) => {
     <div className="relative min-h-[40rem]">
       <Slider {...settings} className="w-full">
         {banners.map((banner) => (
-          <Link key={banner._id} to={banner.link}>
-            <img
-              src={banner.imageUrl}
-              alt="Banner"
-              className="w-full h-[40rem] object-cover"
-            />
-          </Link>
+          <div key={banner._id}>
+            <Link to={banner.link}>
+              <img
+                src={banner.imageUrl}
+                alt="Banner"
+                className="w-full h-[40rem] object-cover"
+              />
+            </Link>
+          </div>
         ))}
       </Slider>
     </div>

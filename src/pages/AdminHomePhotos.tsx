@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import { addHomePhoto, getHomePhotos, deleteHomePhoto, uploadPicture } from "../api-client";
+import {
+  addHomePhoto,
+  getHomePhotos,
+  deleteHomePhoto,
+  uploadPicture,
+} from "../api-client";
 
 const AdminHomePhotos = () => {
   const [banners, setBanners] = useState<any[]>([]);
@@ -22,6 +27,7 @@ const AdminHomePhotos = () => {
 
   const handleaddHomePhoto = async () => {
     if (!imageFile) {
+      alert("No image file selected, kindly select a image");
       console.error("No image file selected");
       return;
     }
@@ -43,7 +49,7 @@ const AdminHomePhotos = () => {
   const handledeleteHomePhoto = async (id: string) => {
     try {
       await deleteHomePhoto(id);
-      setBanners(banners.filter(banner => banner._id !== id));
+      setBanners(banners.filter((banner) => banner._id !== id));
     } catch (error) {
       console.error("Error deleting banner:", error);
     }
@@ -52,7 +58,7 @@ const AdminHomePhotos = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Manage Banners</h1>
-      
+
       <div className="mb-6">
         <input
           type="file"
@@ -67,16 +73,29 @@ const AdminHomePhotos = () => {
           onChange={(e) => setPhotoTitle(e.target.value)}
           className="border p-2 mr-2"
         />
-        <button onClick={handleaddHomePhoto} className="bg-blue-500 text-white p-2 rounded">
+        <button
+          onClick={handleaddHomePhoto}
+          className="bg-blue-500 text-white p-2 rounded"
+        >
           Add Banner
         </button>
       </div>
 
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-3">
         {banners.map((banner) => (
-          <div key={banner._id} className="flex flex-col justify-between items-center mb-4 gap-3 p-3 border shadow-md rounded-lg bg-orange-100">
-            <img src={banner.imageUrl} alt="Banner" className="h-56 w-auto object-cover rounded-md" />
-            <button onClick={() => handledeleteHomePhoto(banner._id)} className="bg-red-500 text-white p-2 rounded w-full hover:bg-red-600">
+          <div
+            key={banner._id}
+            className="flex flex-col justify-between items-center mb-4 gap-3 p-3 border shadow-md rounded-lg bg-orange-100"
+          >
+            <img
+              src={banner.imageUrl}
+              alt="Banner"
+              className="h-56 w-auto object-cover rounded-md"
+            />
+            <button
+              onClick={() => handledeleteHomePhoto(banner._id)}
+              className="bg-red-500 text-white p-2 rounded w-full hover:bg-red-600"
+            >
               Delete
             </button>
           </div>
