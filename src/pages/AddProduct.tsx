@@ -67,6 +67,19 @@ const AdminAddProduct: React.FC = () => {
             console.log(productData);
             await addProduct(productData);
             alert("Product added successfully!");
+            setTitle("");
+            setShortDescription("");
+            setLongDescription("");
+            setPrice("");
+            setCategory("footwear");
+            setSubCategory([]);
+            setIsSpecialPrice(false);
+            setIsFeatured(false);
+            setHighlights([]);
+            setSpecs([]);
+            setAdminRating("");
+            setPrioritizeAdminRating(true);
+            setImages(null);
         } catch (error) {
             console.error("Error adding product:", error);
             alert("Failed to add product");
