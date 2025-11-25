@@ -29,7 +29,7 @@ const AdminOrdersPage = () => {
       await updateOrderStatus(orderId, newStatus);
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
-          order._id === orderId ? { ...order, orderStatus: newStatus } : order
+          order?._id === orderId ? { ...order, orderStatus: newStatus } : order
         )
       );
       setNewStatus("");
@@ -47,82 +47,82 @@ const AdminOrdersPage = () => {
     <div className="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-lg">
       <h1 className="text-3xl font-bold text-gray-900 mb-6">All Orders</h1>
       <ul className="space-y-6">
-        {orders.map((order) => (
+        {orders.length > 0 ? orders.map((order) => (
           <li
-            key={order._id}
+            key={order?._id}
             className="bg-gray-50 p-4 rounded-lg shadow-lg border border-gray-200 flex flex-col lg:flex-row lg:justify-between"
           >
             <div className="flex-1">
               <div className="flex justify-between items-center mb-2">
                 <h2 className="text-xs font-semibold text-gray-800">
-                  Order ID: {order._id}
+                  Order ID: {order?._id}
                 </h2>
               </div>
               <div className="flex items-center mb-2">
                 <p className="text-lg font-bold text-gray-900">
-                  Total: INR {order.amountToBePaid}
+                  Total: INR {order?.amountToBePaid}
                 </p>
               </div>
               <div className="flex items-center mb-2">
                 <CgBox className="text-gray-500 mr-2" />
                 <p className="text-gray-700 text-sm">
-                  Item: {order.productId.title}
+                  Item: {order?.productId?.title}
                 </p>
               </div>
               <div className="flex items-center mb-2">
                 <CgSize className="text-gray-500 mr-2" />
-                <p className="text-gray-700 text-sm">Size: {order.size}</p>
+                <p className="text-gray-700 text-sm">Size: {order?.size}</p>
               </div>
               <div className="flex items-center mb-2">
                 <CgProfile className="text-gray-500 mr-2" />
                 <p className="text-gray-700 text-sm">
-                  Name: {order.userId.firstName} {order.userId.lastName}
+                  Name: {order?.userId?.firstName} {order?.userId?.lastName}
                 </p>
               </div>
               <div className="flex items-center mb-2">
                 <CgPhone className="text-gray-500 mr-2" />
-                <p className="text-gray-700 text-sm">Phone: {order.phone} </p>
+                <p className="text-gray-700 text-sm">Phone: {order?.phone} </p>
               </div>
 
               <div className=" mb-2">
                 <p className="text-gray-700 text-sm mb-1">
-                  Address Line 1: {order.address.addressLine1}{" "}
+                  Address Line 1: {order?.address?.addressLine1}{" "}
                 </p>
                 <p className="text-gray-700 text-sm mb-1">
-                  Address Line 2: {order.address.addressLine2}{" "}
+                  Address Line 2: {order?.address?.addressLine2}{" "}
                 </p>
                 <p className="text-gray-700 text-sm">
-                  City: {order.address.city}, State: {order.address.state}, PIN:{" "}
-                  {order.address.pinCode}{" "}
+                  City: {order?.address?.city}, State: {order?.address?.state}, PIN:{" "}
+                  {order?.address.pinCode}{" "}
                 </p>
               </div>
 
               <div className="flex items-center mb-2">
                 <img
-                  src={order.productId.imageUrl.split(",")[0]}
+                  src={order?.productId?.imageUrl.split(",")[0]}
                   className="h-24 w-24 object-cover object-center rounded-lg"
                   alt=""
                 />
               </div>
 
-              {order.paymentDetails && (
+              {order?.paymentDetails && (
                 <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded">
                   <h4 className="font-semibold mb-2">Payment Details:</h4>
                   <p className="text-sm">
-                    Payment ID: {order.paymentDetails.razorpayPaymentId}
+                    Payment ID: {order?.paymentDetails.razorpayPaymentId}
                   </p>
                   <p className="text-sm">
-                    Order ID: {order.paymentDetails.razorpayOrderId}
+                    Order ID: {order?.paymentDetails.razorpayOrderId}
                   </p>
                   <p className="text-sm">
-                    Method: {order.paymentDetails.paymentMethod}
+                    Method: {order?.paymentDetails.paymentMethod}
                   </p>
                   <p className="text-sm">
-                    Status: {order.paymentDetails.paymentStatus}
+                    Status: {order?.paymentDetails.paymentStatus}
                   </p>
                   <p className="text-sm">
                     Paid At:{" "}
-                    {new Date(order.paymentDetails.paidAt).toLocaleString()}
+                    {new Date(order?.paymentDetails.paidAt).toLocaleString()}
                   </p>
                 </div>
               )}
@@ -130,18 +130,18 @@ const AdminOrdersPage = () => {
             <div className="flex flex-col justify-start gap-3 items-end">
               <p
                 className={`text-sm font-medium ${
-                  order.orderStatus === "DELIVERED"
+                  order?.orderStatus === "DELIVERED"
                     ? "text-green-600"
                     : `${
-                        order.orderStatus === "CANCELED"
+                        order?.orderStatus === "CANCELED"
                           ? "text-red-600"
                           : "text-yellow-600"
                       }`
                 }`}
               >
-                <FaCalendarDay className="inline mr-1" /> {order.orderStatus}
+                <FaCalendarDay className="inline mr-1" /> {order?.orderStatus}
               </p>
-              {/* {order.alreadyPaid ? (
+              {/* {order?.alreadyPaid ? (
                 <p className="text-sm font-medium text-green-500">
                     Payment Received
                     </p>
@@ -149,17 +149,17 @@ const AdminOrdersPage = () => {
                 :
                 (
                     <p className="text-sm font-medium text-red-500">
-                        Payment Pending - Rs. {order.amountToBePaid} to be paid
+                        Payment Pending - Rs. {order?.amountToBePaid} to be paid
                         </p>
                         )
                         } */}
               <button
-                onClick={() => setSelectedOrderId(order._id)}
+                onClick={() => setSelectedOrderId(order?._id)}
                 className="bg-orange-600 w-fit text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-orange-700 transition"
               >
                 <AiOutlineEdit className="inline" /> Update Status
               </button>
-              {selectedOrderId === order._id && (
+              {selectedOrderId === order?._id && (
                 <div className="mt-4 lg:mt-0 lg:ml-4">
                   <select
                     value={newStatus}
@@ -177,7 +177,7 @@ const AdminOrdersPage = () => {
                     <option value="CANCELED">Canceled</option>
                   </select>
                   <button
-                    onClick={() => handleStatusChange(order._id)}
+                    onClick={() => handleStatusChange(order?._id)}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                   >
                     Update
@@ -186,7 +186,13 @@ const AdminOrdersPage = () => {
               )}
             </div>
           </li>
-        ))}
+        
+      
+        ))
+      :<>
+      <center>there is no order right now </center>
+      </>
+      }
       </ul>
     </div>
   );
