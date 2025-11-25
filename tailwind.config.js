@@ -12,6 +12,7 @@ const {
 module.exports = {
   darkMode: ["class"],
   content: [
+    "./index.html", "./src/**/*.{js,ts,jsx,tsx}",
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
@@ -28,6 +29,10 @@ module.exports = {
     },
     extend: {
       keyframes: {
+        "slide-up": {
+          "0%": { transform: "translateY(100%)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
         "border-beam": {
           "100%": {
             "offset-distance": "100%",
@@ -58,6 +63,7 @@ module.exports = {
         },
       },
       animation: {
+         "slide-up": "slide-up 0.4s ease-out",
         "border-beam": "border-beam calc(var(--duration)*1s) infinite linear",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",

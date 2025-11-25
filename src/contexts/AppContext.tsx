@@ -11,9 +11,21 @@ type ToastMessage = {
 type AppContextType = {
   showToast: (toastMessage: ToastMessage) => void;
   isLoggedIn: boolean;
-  setLoggedIn: (loggedIn: boolean) => void; // Added setLoggedIn
+  setLoggedIn: (loggedIn: boolean) => void;
   userId: string | undefined;
   isAdmin: boolean;
+};
+
+// ✅ Keep this helper function here at the top (before AppContext)
+const getCookieConsent = () => {
+  const consent = localStorage.getItem("cookieConsent");
+  if (!consent) return null;
+  
+  try {
+    return JSON.parse(consent);
+  } catch {
+    return { accepted: consent === "accepted" };
+  }
 };
 
 const AppContext = React.createContext<AppContextType | undefined>(undefined);
@@ -23,10 +35,12 @@ export const AppContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Manage login state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  // ✅ Use the consent checker in the useQuery
   const { isError, data } = useQuery("validateToken", apiClient.validateToken, {
     retry: false,
+    enabled: getCookieConsent()?.accepted === true, // Only validate if consent given
   });
 
   const userId = data?.userId;
@@ -34,7 +48,7 @@ export const AppContextProvider = ({
 
   // Update isLoggedIn based on the query result
   useEffect(() => {
-    setIsLoggedIn(!isError);
+    setIsLoggedIn(!isError && getCookieConsent()?.accepted === true);
   }, [isError]);
 
   return (
@@ -44,7 +58,7 @@ export const AppContextProvider = ({
           showToast(toastMessage.message, toastMessage.type);
         },
         isLoggedIn: isLoggedIn,
-        setLoggedIn: setIsLoggedIn, // Provide setLoggedIn to context
+        setLoggedIn: setIsLoggedIn,
         userId: userId,
         isAdmin: isAdmin,
       }}

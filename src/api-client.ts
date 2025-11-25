@@ -6,7 +6,16 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 // ------------------------------------user
 
+const checkCookieConsent = (): boolean => {
+  const consent = localStorage.getItem("cookieConsent");
+  return consent === "accepted";
+};
+
 export const register = async (formData: RegisterFormData) => {
+  if (!checkCookieConsent()) {
+    throw new Error("Please accept cookies to register");
+  }
+
   const response = await fetch(`${API_BASE_URL}/api/users/register`, {
     method: "POST",
     credentials: "include",
@@ -24,6 +33,9 @@ export const register = async (formData: RegisterFormData) => {
 };
 
 export const validateToken = async () => {
+   if (!checkCookieConsent()) {
+    throw new Error("Cookie consent required");
+  }
   const response = await fetch(`${API_BASE_URL}/api/auth/validate-token`, {
     credentials: "include",
   });
@@ -36,6 +48,9 @@ export const validateToken = async () => {
 };
 
 export const signIn = async (formData: SignInFormData) => {
+   if (!checkCookieConsent()) {
+    throw new Error("Please accept cookies to sign in");
+  }
   const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
     method: "POST",
     credentials: "include",
