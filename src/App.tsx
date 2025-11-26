@@ -26,6 +26,7 @@ import AdminHomePhotos from "./pages/AdminHomePhotos";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import ScrollToTop from "./ScrollToTop";
+import AuthSuccess from "./pages/AuthSuccess";
 
 function App() {
   const { isLoggedIn, isAdmin } = useAppContext()
@@ -37,6 +38,7 @@ function App() {
         <Route path="/" element={<Layout><HomePage /></Layout>} />
         <Route path="/register" element={<Layout><Register /></Layout>} />
         <Route path="/sign-in" element={<Layout><SignIn /></Layout>} />
+        <Route path="/auth-success" element={<Layout><AuthSuccess /></Layout>} />
 
         <Route path="/privacy-policy" element={<Layout><PrivacyPolicy /></Layout>} />
         <Route path="/terms-of-service" element={<Layout><TermsOfService /></Layout>} />
