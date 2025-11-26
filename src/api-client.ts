@@ -40,7 +40,7 @@ export const validateToken = async () => {
    if (!checkCookieConsent()) {
     throw new Error("Cookie consent required");
   }
-  const response = await fetch(`${API_BASE_URL}/api/auth/validate-token`, {
+  const response = await fetch(`${API_BASE_URL}/api/auth-passport/check-session`, {
     credentials: "include",
   });
 
@@ -55,7 +55,7 @@ export const signIn = async (formData: SignInFormData) => {
    if (!checkCookieConsent()) {
     throw new Error("Please accept cookies to sign in");
   }
-  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+  const response = await fetch(`${API_BASE_URL}/api/auth-passport/passport-login`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -71,8 +71,41 @@ export const signIn = async (formData: SignInFormData) => {
   return body;
 };
 
+export const passportGoogleLogin = () => {
+  if (!checkCookieConsent()) {
+    throw new Error("Please accept cookies to login with Google");
+  }
+  window.location.href = `${API_BASE_URL}/api/auth-passport/google`;
+};
+
+export const getCurrentUser = async () => {
+  if (!checkCookieConsent()) {
+    throw new Error("Cookie consent required");
+  }
+  const response = await fetch(`${API_BASE_URL}/api/auth-passport/me`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch current user");
+  }
+
+  return response.json();
+};
+
+export const passportLogout = async () => {
+  const response = await fetch(`${API_BASE_URL}/api/auth-passport/passport-logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Error during sign out");
+  }
+};
+
 export const signOut = async () => {
-  const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
+  const response = await fetch(`${API_BASE_URL}/api/auth-passport/passport-logout`, {
     credentials: "include",
     method: "POST",
   });

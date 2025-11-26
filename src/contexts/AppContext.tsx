@@ -36,6 +36,8 @@ export const AppContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userId, setUserId] = useState<string | undefined>(undefined);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // ✅ Use the consent checker in the useQuery
   const { isError, data } = useQuery("validateToken", apiClient.validateToken, {
@@ -43,8 +45,18 @@ export const AppContextProvider = ({
     enabled: getCookieConsent()?.accepted === true, // Only validate if consent given
   });
 
-  const userId = data?.userId;
-  const isAdmin = data?.isAdmin;
+  // Extract userId and isAdmin from response
+  useEffect(() => {
+    if (!isError && data) {
+      setUserId(data.userId);
+      setIsAdmin(data.isAdmin || false);
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+      setUserId(undefined);
+      setIsAdmin(false);
+    }
+  }, [data, isError]);
 
   // Update isLoggedIn based on the query result
   useEffect(() => {
